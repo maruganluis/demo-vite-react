@@ -30,3 +30,15 @@ body {
   display: flex;
   margin: 0;
 }
+
+.status {
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: rgb(255, 244, 230);
+  width: fit-content;
+  padding: 8px;
+  border-radius: 8px;
+  color:rgb(170, 97, 23);
+  border: 1px rgba(165, 42, 42, 0.137) solid;
+}
