@@ -48,10 +48,13 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items:flex-start;
 }
 
-.game-info {
+.game__info {
   margin-left: 20px;
-  margin-top: 60px;
+}
+
+.button__board {
+  margin-bottom: 8px;
 }
