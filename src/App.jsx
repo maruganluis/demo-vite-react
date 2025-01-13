@@ -73,21 +73,19 @@ function Board({ xIsNext, squares, onPlay }) { // Props de Board, xIsNext = indi
 // Componente principal del 3 en raya, componente padre. Gestiona el estado global del juego (turnos, historial, tablero actual...) //
 
 export default function Game() {
-  const [xIsNext, setXIsNext] = useState(true);
-  const [history, setHistory] = useState([Array(9).fill(null)]); // Indica de quien es el turno actual, true=X, false=0
-  const [currentMove, setCurrentMove] = useState(0);
-  const currentSquares = history[currentMove];
+  const [history, setHistory] = useState([Array(9).fill(null)]); // Array que guarda el historial de tableros (uno por jugada)
+  const [currentMove, setCurrentMove] = useState(0); // Indice del movimiento actual
+  const xIsNext = currentMove % 2 === 0;
+  const currentSquares = history[currentMove]; // Obtiene el tablero correspondiente al movimiento actual (currentMove) desde el historial (history)
   
   function handlePlay(nextSquares) {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]; // Si se hace un nuevo movimiento después de haber retrocedido, elimina los movimientos futuros del historial
-    setHistory(nextHistory); // Actualiza el historial
-    setCurrentMove(nextHistory.length - 1); // El movimiento actual pasa a ser el último del nuevo historial
-    setXIsNext(!xIsNext); // Cambia el turno
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
   }
 
   function jumpTo(nextMove) {
-    setCurrentMove(nextMove); // Permite retroceder o avanzar en el historial 
-    setXIsNext(nextMove % 2 === 0); // Calcula de quién es el turno basándose en si el movimiento es par o impar
+    setCurrentMove(nextMove); // Permite "viajar en el tiempo" al seleccionar un movimiento del historial
   }
 
   const moves = history.map((squares, move) => {  // map recorre el historial de tableros y crea un boton para cada movimiento
@@ -99,17 +97,17 @@ export default function Game() {
     } 
     return ( // Por cada movimiento en el historial, se devuelve un li con un boton que ejecuta la funcion jumpTo
       <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
+        <button className="button__board" onClick={() => jumpTo(move)}>{description}</button>
       </li> // key es un atributo especial en React que se usa para identificar de manera única cada elemento en una lista
     );
   });
 
   return ( 
     <div className="game">
-      <div className="game-board">
+      <div className="game__board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} /> 
       </div>
-      <div className="game-info">
+      <div className="gameinfo">
         <ol>{moves}</ol>
       </div>
     </div>  // El tablero no actualiza el estado directamente, llama al handPlay cuando hay una jugada, pasando el nuevo tablero como argumento
