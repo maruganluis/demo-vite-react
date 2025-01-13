@@ -16,12 +16,22 @@ function Square({value, onSquareClick}) {
 // Tablero del 3 en raya //
 
 export default function Board() {
+  const [xIsNext, setXIsNext] = useState(true);
   const [squares, setSquares] = useState(Array(9).fill(null));
 
   function handleClick(i) {
+    if (squares[i]) {
+      return;
+    }
     const nextSquares = squares.slice();
-    nextSquares[i] = "X";
+    if (xIsNext) {
+      nextSquares[i] = `X`;
+    } else {
+      nextSquares[i] = `0`;
+    }
     setSquares(nextSquares);
+    setXIsNext(!xIsNext);
+
   }
 
 
