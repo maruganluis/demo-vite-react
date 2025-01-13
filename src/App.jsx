@@ -2,12 +2,12 @@ import { useState } from "react";
 
 // Componente Square //
 
-function Square({value, onSquareClick}) {
+function Square({value, onSquareClick}) { // Esto son las propiedades que el componente recibe cuando se usa (props)
 
   return (
     <button className="square" onClick={onSquareClick}>
-      {value}
-    </button>
+      {value}  
+    </button> // Value, contenido de la casilla, puede ser "X", "0" o null (se muestra dentro del button)
   );  
 }
 
@@ -15,23 +15,26 @@ function Square({value, onSquareClick}) {
 
 // Tablero del 3 en raya //
 
-export default function Board() {
-  const [xIsNext, setXIsNext] = useState(true); // Alternar entre X y O
-  const [squares, setSquares] = useState(Array(9).fill(null)); // Rellenar el tablero de nulls
-
+function Board({ xIsNext, squares, onPlay }) { // Props de Board, xIsNext = indica si el turno es X o 0, squares representa el estado actual del tablero, onPlay es una función que el componente Board llama cuando se actualiza el tablero
   function handleClick(i) {
-    if (squares[i]) {  // Si la casilla esta ocupada, no deja sobreescribir
+    if (calculateWinner(squares) || squares[i]) { // Si ya hay un ganador, devuelve un valor distinto de null y no deja hacer mas clics
       return;
     }
-    const nextSquares = squares.slice(); // Crea una copia del tablero
-    if (xIsNext) {
-      nextSquares[i] = `X`; 
+    const nextSquares = squares.slice(); // Copia del array squares, no se debe modificar directamente el estado
+    if (xIsNext) { // Actualizar la casilla seleccionada
+      nextSquares[i] = `X`;
     } else {
       nextSquares[i] = `0`;
     }
-    setSquares(nextSquares); // Actualiza el estado del board con la copia slice modificada
-    setXIsNext(!xIsNext); // Esto cambia el turno, si era true, ahora será false, y viceversa
+    onPlay(nextSquares); // LLamas a onPlay, en lugar de actualizar directamente el estado del tablero, llama a la función onPlay y le pasa el nuevo tablero (nextSquares)
   }
+  
+    // Este cambio sigue un principio clave de React: elevar el estado
+
+        // Antes: El estado del tablero (squares) y el turno (xIsNext) estaban dentro del componente Board
+        // Ahora: Estos estados se gestionan en un nivel superior, es el componente padre quien actualiza el estado = Game  //
+
+
 
     // Mostrar el estado del juego: quién ganó o cuál es el siguiente jugador //
 
@@ -63,6 +66,31 @@ export default function Board() {
       </div>
       
     </>
+  );
+}
+
+
+// Componente principal del 3 en raya, componente padre. Gestiona el estado global del juego (turnos, historial, tablero actual...) //
+
+export default function Game() {
+  const [xIsNext, setXIsNext] = useState(true);
+  const [history, setHistory] = useState([Array(9).fill(null)]); // Indica de quien es el turno actual, true=X, false=0
+  const currentSquares = history[history.length - 1]; // History es un array que guarda el historial de todos los tableros, cada vez que se hace una jugada, se agrega una copia del nuevo tablero al historial
+
+  function handlePlay(nextSquares) {
+    setHistory([...history, nextSquares]); //Crea un nuevo array copiando el historial actual (...history) y añade el nuevo tablero (nextSquares), así se guarda el estado del tablero despues de la jugada
+    setXIsNext(!xIsNext); 
+  }
+
+  return (
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} /> 
+      </div>
+      <div className="game-info">
+        <ol>{/*TODO*/}</ol>
+      </div>
+    </div>  // El tablero no actualiza el estado directamente, llama al handPlay cuando hay una jugada, pasando el nuevo tablero como argumento
   );
 }
 
