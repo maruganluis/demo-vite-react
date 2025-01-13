@@ -75,20 +75,42 @@ function Board({ xIsNext, squares, onPlay }) { // Props de Board, xIsNext = indi
 export default function Game() {
   const [xIsNext, setXIsNext] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]); // Indica de quien es el turno actual, true=X, false=0
-  const currentSquares = history[history.length - 1]; // History es un array que guarda el historial de todos los tableros, cada vez que se hace una jugada, se agrega una copia del nuevo tablero al historial
-
+  const [currentMove, setCurrentMove] = useState(0);
+  const currentSquares = history[currentMove];
+  
   function handlePlay(nextSquares) {
-    setHistory([...history, nextSquares]); //Crea un nuevo array copiando el historial actual (...history) y añade el nuevo tablero (nextSquares), así se guarda el estado del tablero despues de la jugada
-    setXIsNext(!xIsNext); 
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]; // Si se hace un nuevo movimiento después de haber retrocedido, elimina los movimientos futuros del historial
+    setHistory(nextHistory); // Actualiza el historial
+    setCurrentMove(nextHistory.length - 1); // El movimiento actual pasa a ser el último del nuevo historial
+    setXIsNext(!xIsNext); // Cambia el turno
   }
 
-  return (
+  function jumpTo(nextMove) {
+    setCurrentMove(nextMove); // Permite retroceder o avanzar en el historial 
+    setXIsNext(nextMove % 2 === 0); // Calcula de quién es el turno basándose en si el movimiento es par o impar
+  }
+
+  const moves = history.map((squares, move) => {  // map recorre el historial de tableros y crea un boton para cada movimiento
+    let description;
+    if (move > 0) {
+      description = `Ir al movimiento #` + move;
+    } else {
+      description = `Ir al inicio del juego`;
+    } 
+    return ( // Por cada movimiento en el historial, se devuelve un li con un boton que ejecuta la funcion jumpTo
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li> // key es un atributo especial en React que se usa para identificar de manera única cada elemento en una lista
+    );
+  });
+
+  return ( 
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} /> 
       </div>
       <div className="game-info">
-        <ol>{/*TODO*/}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>  // El tablero no actualiza el estado directamente, llama al handPlay cuando hay una jugada, pasando el nuevo tablero como argumento
   );
