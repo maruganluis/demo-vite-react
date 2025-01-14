@@ -13,7 +13,6 @@ function Square({value, onSquareClick}) { // Esto son las propiedades que el com
 
 
 
-
 // Tablero del 3 en raya //
 
 function Board({ xIsNext, squares, onPlay }) { // Props de Board, xIsNext = indica si el turno es X o 0, squares representa el estado actual del tablero, onPlay es una función que el componente Board llama cuando se actualiza el tablero
@@ -69,6 +68,14 @@ function Board({ xIsNext, squares, onPlay }) { // Props de Board, xIsNext = indi
     </>
   );
 }
+
+// Sonarcloud = Validar todas las props con PropTypes.shape
+
+Board.propTypes = {
+  xIsNext: PropTypes.bool.isRequired,
+  squares: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])])).isRequired,
+  onPlay: PropTypes.func.isRequired,
+};
 
 
 // Componente principal del 3 en raya, componente padre. Gestiona el estado global del juego (turnos, historial, tablero actual...) //
@@ -133,9 +140,8 @@ function calculateWinner(squares) {
     [0, 4, 8], // Diagonal principal
     [2, 4, 6], // Diagonal secundaria
   ];
-  for (let i = 0; i < lines.length; i++) { // Recorre cada combinación ganadora (lines[i])
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) { // Comprueba si hay un ganador
+  for (const [a, b, c] of lines) {
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return squares[a];
     }
   }
