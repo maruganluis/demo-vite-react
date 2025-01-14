@@ -13,6 +13,7 @@ function Square({value, onSquareClick}) { // Esto son las propiedades que el com
 
 
 
+
 // Tablero del 3 en raya //
 
 function Board({ xIsNext, squares, onPlay }) { // Props de Board, xIsNext = indica si el turno es X o 0, squares representa el estado actual del tablero, onPlay es una función que el componente Board llama cuando se actualiza el tablero
@@ -95,8 +96,12 @@ export default function Game() {
     } else {
       description = `Ir al inicio del juego`;
     } 
+
+    // Sonarcloud: Solventar issue = Generar una clave única basada en el contenido del tablero
+    const key = squares.join('-') || 'inicio';
+
     return ( // Por cada movimiento en el historial, se devuelve un li con un boton que ejecuta la funcion jumpTo
-      <li key={move}>
+      <li key={key}>
         <button className="button__board" onClick={() => jumpTo(move)}>{description}</button>
       </li> // key es un atributo especial en React que se usa para identificar de manera única cada elemento en una lista
     );
