@@ -1,4 +1,6 @@
 import { useState } from "react";
+import PropTypes from 'prop-types';
+
 
 // Componente Square //
 
@@ -10,6 +12,12 @@ function Square({value, onSquareClick}) { // Esto son las propiedades que el com
     </button> // Value, contenido de la casilla, puede ser "X", "0" o null (se muestra dentro del button)
   );  
 }
+
+// Sonarcloud = Validar todas las props
+Square.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([null])]).isRequired, // Puede ser 'X', 'O' o null
+  onSquareClick: PropTypes.func.isRequired, // Debe ser una función y es obligatoria
+};
 
 
 
